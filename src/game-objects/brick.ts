@@ -51,6 +51,19 @@ export class Brick {
 		this.ctx.lineTo(this.x + borderSize, this.y + this.size - borderSize);
 		this.ctx.closePath();
 		this.ctx.fill();
-		this.ctx.stroke();
+
+		// draw right bevel
+		this.ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+		this.ctx.beginPath();
+		this.ctx.moveTo(this.x + this.size, this.y);
+		this.ctx.lineTo(this.x + this.size, this.y + this.size);
+		this.ctx.lineTo(
+			this.x + this.size - borderSize,
+			this.y + this.size - borderSize
+		);
+		this.ctx.lineTo(this.x + this.size - borderSize, this.y + borderSize);
+
+		this.ctx.closePath();
+		this.ctx.fill();
 	}
 }
