@@ -1,69 +1,65 @@
+import { BRICK_SIZE } from "../constants";
+
 export class Brick {
-	ctx: CanvasRenderingContext2D;
-	x: number;
-	y: number;
-	size: number = 100;
-	color: string = "red";
+	size: number = BRICK_SIZE;
 
-	constructor(ctx: CanvasRenderingContext2D, x: number, y: number) {
-		this.ctx = ctx;
-		this.x = x;
-		this.y = y;
-	}
+	constructor(
+		private readonly ctx: CanvasRenderingContext2D,
+		public x: number,
+		public y: number,
+        public readonly color: string = "red"
+	) {}
 
-	draw(): void {
-		this.ctx.fillStyle = this.color;
-		this.ctx.fillRect(this.x, this.y, this.size, this.size);
+	public draw(): void {
+		// destructure this into variables
+		const { ctx, x, y, size, color } = this;
 
-		let borderSize = this.size * 0.25;
+		ctx.fillStyle = color;
+		ctx.fillRect(x, y, size, size);
 
-		this.ctx.strokeStyle = "white";
+		let borderSize = size * 0.15;
+
+		ctx.strokeStyle = "white";
 
 		// draw top bevel
-		this.ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-		this.ctx.beginPath();
-		this.ctx.moveTo(this.x, this.y);
-		this.ctx.lineTo(this.x + this.size, this.y);
-		this.ctx.lineTo(this.x + this.size - borderSize, this.y + borderSize);
-		this.ctx.lineTo(this.x + borderSize, this.y + borderSize);
-		this.ctx.closePath();
-		this.ctx.fill();
+		ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+		ctx.beginPath();
+		ctx.moveTo(x, y);
+		ctx.lineTo(x + size, y);
+		ctx.lineTo(x + size - borderSize, y + borderSize);
+		ctx.lineTo(x + borderSize, y + borderSize);
+		ctx.closePath();
+		ctx.fill();
 
 		// draw left bevel
-		this.ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-		this.ctx.beginPath();
-		this.ctx.moveTo(this.x, this.y);
-		this.ctx.lineTo(this.x, this.y + this.size);
-		this.ctx.lineTo(this.x + borderSize, this.y + this.size - borderSize);
-		this.ctx.lineTo(this.x + borderSize, this.y + borderSize);
-		this.ctx.closePath();
-		this.ctx.fill();
+		ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+		ctx.beginPath();
+		ctx.moveTo(x, y);
+		ctx.lineTo(x, y + size);
+		ctx.lineTo(x + borderSize, y + size - borderSize);
+		ctx.lineTo(x + borderSize, y + borderSize);
+		ctx.closePath();
+		ctx.fill();
 
 		// draw bottom bevel
-		this.ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-		this.ctx.beginPath();
-		this.ctx.moveTo(this.x, this.y + this.size);
-		this.ctx.lineTo(this.x + this.size, this.y + this.size);
-		this.ctx.lineTo(
-			this.x + this.size - borderSize,
-			this.y + this.size - borderSize
-		);
-		this.ctx.lineTo(this.x + borderSize, this.y + this.size - borderSize);
-		this.ctx.closePath();
-		this.ctx.fill();
+		ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+		ctx.beginPath();
+		ctx.moveTo(x, y + size);
+		ctx.lineTo(x + size, y + size);
+		ctx.lineTo(x + size - borderSize, y + size - borderSize);
+		ctx.lineTo(x + borderSize, y + size - borderSize);
+		ctx.closePath();
+		ctx.fill();
 
 		// draw right bevel
-		this.ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
-		this.ctx.beginPath();
-		this.ctx.moveTo(this.x + this.size, this.y);
-		this.ctx.lineTo(this.x + this.size, this.y + this.size);
-		this.ctx.lineTo(
-			this.x + this.size - borderSize,
-			this.y + this.size - borderSize
-		);
-		this.ctx.lineTo(this.x + this.size - borderSize, this.y + borderSize);
+		ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+		ctx.beginPath();
+		ctx.moveTo(x + size, y);
+		ctx.lineTo(x + size, y + size);
+		ctx.lineTo(x + size - borderSize, y + size - borderSize);
+		ctx.lineTo(x + size - borderSize, y + borderSize);
 
-		this.ctx.closePath();
-		this.ctx.fill();
+		ctx.closePath();
+		ctx.fill();
 	}
 }

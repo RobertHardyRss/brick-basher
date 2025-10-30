@@ -9,3 +9,4 @@ initCanvas();
 
 let brick = new Brick(ctx, canvas.width / 2, canvas.height / 2);
 brick.draw();
+
