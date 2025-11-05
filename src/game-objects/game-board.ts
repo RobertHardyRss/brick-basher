@@ -37,3 +37,5 @@ export class GameBoard {
 		});
 	}
 }
+
+// create a function to draw a 5 x 5 block

@@ -37,7 +37,7 @@ export class BrickSet {
 		this.setColor();
 
 		pos.forEach((p) => {
-			let point = pointMap[p];
+			let point = pointMap[p - 1];
 			let brick = new Brick(ctx, x + point.x, y + point.y, this.color);
 			this.bricks.push(brick);
 		});
