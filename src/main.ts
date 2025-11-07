@@ -1,8 +1,17 @@
-import { ctx, canvas, initCanvas } from "./canvas-ctx";
-import { GameBoard } from "./game-objects/game-board";
 import "./style.css";
+import { ctx, canvas, initCanvas } from "./canvas-ctx";
+import { GameManager } from "./game-manager";
 
 initCanvas();
 
-let gb = new GameBoard(ctx, canvas.width / 2, 100);
-gb.draw();
+let gm = new GameManager(ctx, canvas);
+
+function gameLoop(timestamp: number) {
+	gm.update(timestamp);
+	gm.draw();
+
+	// make sure this stays as the last thing
+	requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(gameLoop);
