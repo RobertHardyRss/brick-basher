@@ -27,6 +27,7 @@ const pointMap: Array<Point> = [
 export class BrickSet {
 	public bricks: Array<Brick> = [];
 	public color: string = "red";
+	public isSelected: boolean = false;
 
 	constructor(
 		protected readonly ctx: CanvasRenderingContext2D,
@@ -53,5 +54,21 @@ export class BrickSet {
 		let rand = Math.floor(Math.random() * colors.length);
 
 		this.color = colors[rand];
+	}
+
+	public isMouseOver(point: Point): boolean {
+		return this.bricks.some((b) => b.isPointOver(point));
+	}
+
+	public move(position: Point): void {
+		this.x = position.x;
+		this.y = position.y;
+
+		const { x, y, pos, bricks } = this;
+		pos.forEach((p, i) => {
+			let point = pointMap[p - 1];
+			bricks[i].x = x + point.x;
+			bricks[i].y = y + point.y;
+		});
 	}
 }

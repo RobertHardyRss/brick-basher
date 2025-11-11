@@ -1,12 +1,13 @@
 import { BOARD_COLOR, BRICK_SIZE } from "../constants";
 import { Brick } from "./brick";
+import type { BrickSet } from "./brick-set";
 
 export class GameBoard {
 	color: string = BOARD_COLOR;
 	rows: number = 8;
 	cols: number = 8;
 	private readonly x: number;
-	private cells: Array<Brick> = [];
+	public cells: Array<Brick> = [];
 
 	constructor(
 		private readonly ctx: CanvasRenderingContext2D,
@@ -36,6 +37,25 @@ export class GameBoard {
 			c.draw();
 		});
 	}
-}
 
-// create a function to draw a 5 x 5 block
+	public highlightBrickSet(brickSet: BrickSet) {
+		let bricksOverBoard = 0;
+
+		this.cells.forEach((c) => {
+			brickSet.bricks.forEach((b) => {
+				c.highlightColor = null;
+				if (b.IsOverOther(c)) {
+					bricksOverBoard++;
+				}
+			});
+		});
+
+		if (bricksOverBoard === brickSet.bricks.length) {
+			this.cells.forEach((c) => {
+				brickSet.bricks.forEach((b) => {
+					b.HighlightOtherIfOver(c);
+				});
+			});
+		}
+	}
+}
