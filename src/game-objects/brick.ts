@@ -14,13 +14,13 @@ export class Brick {
 
 	public draw(): void {
 		// destructure this into variables
-		const { ctx, x, y, size, color } = this;
+		const { ctx, x, y, size, color, highlightColor } = this;
 
 		// saves the stats of the current context
 		ctx.save();
 
-		ctx.fillStyle = this.highlightColor ?? color;
-		ctx.globalAlpha = this.highlightColor ? 0.5 : 1;
+		ctx.fillStyle = highlightColor ?? color;
+		ctx.globalAlpha = highlightColor ? 0.5 : 1;
 
 		ctx.fillRect(x, y, size, size);
 
@@ -91,7 +91,17 @@ export class Brick {
 		return new Point(x + size / 2, y + size / 2);
 	}
 
-	public isOtherOver(other: Brick): boolean {
-		return this.isPointOver(other.center());
+	public isOverOther(other: Brick): boolean {
+		return other.isPointOver(this.center());
+	}
+
+	public highlightOtherIfOver(other: Brick) {
+		if (this.isOverOther(other)) {
+			other.highlightColor = this.color;
+		}
+	}
+
+	public highlight(color: string | null) {
+		this.highlightColor = color;
 	}
 }

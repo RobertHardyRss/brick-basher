@@ -3,11 +3,11 @@ import { BrickSet } from "./brick-set";
 import { Point } from "./point";
 
 export class PatternSlot {
-	public brickSet!: BrickSet;
+	public brickSet: BrickSet | null = null;
 
 	constructor(
 		private readonly ctx: CanvasRenderingContext2D,
-		public point: Point
+		private readonly point: Point
 	) {
 		this.generateSet();
 	}
@@ -22,14 +22,14 @@ export class PatternSlot {
 	}
 
 	public isPointOver(point: Point): boolean {
-		return this.brickSet.isPointOver(point);
+		return this.brickSet?.isPointOver(point) ?? false;
 	}
 
 	public move(point: Point): void {
-		this.brickSet.move(point);
+		this.brickSet?.move(point);
 	}
 
 	public resetPosition(): void {
-		this.brickSet.move(this.point);
+		this.brickSet?.move(this.point);
 	}
 }

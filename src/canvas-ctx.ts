@@ -10,8 +10,6 @@ function initCanvas() {
 function onResize() {
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
-
-	console.log("Resized window", canvas.width, canvas.height);
 }
 
 export { canvas, ctx, initCanvas };
