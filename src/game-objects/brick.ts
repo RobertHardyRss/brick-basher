@@ -3,6 +3,7 @@ import { Point } from "./point";
 
 export class Brick {
 	size: number = BRICK_SIZE;
+	public highlightColor: string | null = null;
 
 	constructor(
 		private readonly ctx: CanvasRenderingContext2D,
@@ -13,14 +14,22 @@ export class Brick {
 
 	public draw(): void {
 		// destructure this into variables
-		const { ctx, x, y, size, color } = this;
+		const { ctx, x, y, size, color, highlightColor } = this;
 
-		ctx.fillStyle = color;
+		ctx.save();
+		ctx.fillStyle = highlightColor ?? color;
+		ctx.globalAlpha = highlightColor ? 0.5 : 1;
 		ctx.fillRect(x, y, size, size);
 
-		let borderSize = size * 0.15;
+		this.drawBevels();
 
-		ctx.strokeStyle = "white";
+		ctx.restore();
+	}
+
+	private drawBevels() {
+		const { ctx, x, y, size } = this;
+
+		let borderSize = size * 0.15;
 
 		// draw top bevel
 		ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
@@ -62,6 +71,8 @@ export class Brick {
 
 		ctx.closePath();
 		ctx.fill();
+
+		ctx.restore();
 	}
 
 	public isPointOver(point: Point): boolean {
@@ -71,5 +82,24 @@ export class Brick {
 
 		const isInPath = ctx.isPointInPath(path, point.x, point.y);
 		return isInPath;
+	}
+
+	public center(): Point {
+		const { x, y, size } = this;
+		return new Point(x + size / 2, y + size / 2);
+	}
+
+	public isOverOther(other: Brick): boolean {
+		return other.isPointOver(this.center());
+	}
+
+	public highlightOtherIfOver(other: Brick) {
+		if (this.isOverOther(other)) {
+			other.highlightColor = this.color;
+		}
+	}
+
+	public highlight(color: string | null) {
+		this.highlightColor = color;
 	}
 }

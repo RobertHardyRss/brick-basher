@@ -1,4 +1,5 @@
 import { BRICK_SIZE } from "./constants";
+import type { BrickSet } from "./game-objects/brick-set";
 import { GameBoard } from "./game-objects/game-board";
 import { PatternSlot } from "./game-objects/pattern-slot";
 import { Point } from "./game-objects/point";
@@ -22,6 +23,7 @@ export class GameManager {
 		private readonly canvas: HTMLCanvasElement
 	) {
 		this.wireUpEvents();
+
 		this.board = new GameBoard(ctx, canvas.width / 2, this.boardPadding.top);
 		this.initSlots();
 	}
@@ -30,12 +32,11 @@ export class GameManager {
 		const { board, slotAlpha, slotBeta, slotCharlie } = this;
 
 		board.draw();
-		slotAlpha.brickSet.draw();
-		slotBeta.brickSet.draw();
-		slotCharlie.brickSet.draw();
+		slotAlpha.brickSet?.draw();
+		slotBeta.brickSet?.draw();
+		slotCharlie.brickSet?.draw();
+		slotBeta.brickSet?.draw();
 	}
-
-	public update(timestamp: number): void {}
 
 	private initSlots() {
 		let pointBeta = new Point(
@@ -51,6 +52,21 @@ export class GameManager {
 		this.slotCharlie = new PatternSlot(this.ctx, pointBeta);
 	}
 
+	public update(elapsedTime: number): void {
+		document.body.style.cursor = "default";
+
+		if (this.slotBeta.brickSet?.isPointOver(this.mousePosition)) {
+			console.log("mouse over slot beta", elapsedTime);
+			document.body.style.cursor = "grab";
+		}
+
+		if (this.selectedSlot && this.selectedSlot.brickSet) {
+			this.selectedSlot.brickSet!.move(this.mousePosition);
+			document.body.style.cursor = "none";
+			this.board.highlightBrickSet(this.selectedSlot.brickSet!);
+		}
+	}
+
 	private wireUpEvents() {
 		this.onMouseMove = this.onMouseMove.bind(this);
 		document.addEventListener("mousemove", this.onMouseMove);
@@ -59,22 +75,35 @@ export class GameManager {
 		document.addEventListener("click", this.onClick);
 	}
 
-	private onMouseMove(event: MouseEvent) {
+	private onMouseMove(event: MouseEvent): void {
 		this.mousePosition.x = event.clientX;
 		this.mousePosition.y = event.clientY;
-		//console.log("Mouse position", this.mousePosition);
+		//console.log(this.mousePosition);
 	}
 
 	private onClick() {
-		console.log("Mouse Clicked!");
+		const { slotBeta, mousePosition, board } = this;
 
-		// we need to track the selected slot
-		// we need pick up brick set if we don't have one
-		// we need to drop a brickset if click on an empty space
+		console.log("click", this);
 
-		if (this.slotAlpha.isPointOver(this.mousePosition)) {
-			console.log("click alpha!", this.mousePosition);
-			this.selectedSlot = this.slotAlpha;
+		if (this.selectedSlot && this.selectedSlot.brickSet) {
+			if (board.targetSlots.length) {
+				board.targetSlots.forEach((s, i) => {
+					board.slots[s].setBrick(this.selectedSlot!.brickSet!.bricks[i]);
+				});
+				this.selectedSlot.brickSet = null;
+
+				// temp
+				this.selectedSlot.generateSet();
+			}
+			this.selectedSlot.resetPosition();
+			this.selectedSlot = null;
+			return;
+		}
+
+		if (slotBeta.brickSet?.isPointOver(mousePosition)) {
+			document.body.style.cursor = "none";
+			this.selectedSlot = this.slotBeta;
 		}
 	}
 }
