@@ -1,6 +1,7 @@
 import { BOARD_COLOR, BRICK_SIZE } from "../constants";
 import { Brick } from "./brick";
 import type { BrickSet } from "./brick-set";
+import { Point } from "./point";
 
 export class GameBoard {
 	color: string = BOARD_COLOR;
@@ -8,6 +9,8 @@ export class GameBoard {
 	cols: number = 8;
 	private readonly x: number;
 	public cells: Array<Brick> = [];
+	public slots: Array<BoardSlot> = [];
+	public targetSlots: Array<number> = [];
 
 	constructor(
 		private readonly ctx: CanvasRenderingContext2D,
@@ -20,7 +23,7 @@ export class GameBoard {
 	}
 
 	private initGrid() {
-		const { rows, cols, x, y, ctx, cells } = this;
+		const { rows, cols, x, y, ctx, cells, slots } = this;
 
 		for (let row = 0; row < rows; row++) {
 			for (let col = 0; col < cols; col++) {
@@ -28,6 +31,7 @@ export class GameBoard {
 				let by = y + BRICK_SIZE * row;
 				let cell = new Brick(ctx, bx, by, BOARD_COLOR);
 				cells.push(cell);
+				slots.push(new BoardSlot(new Point(bx, by), null));
 			}
 		}
 	}
@@ -36,26 +40,46 @@ export class GameBoard {
 		this.cells.forEach((c) => {
 			c.draw();
 		});
+
+		this.slots.forEach((s) => {
+			s.brick?.draw();
+		});
 	}
 
 	public highlightBrickSet(brickSet: BrickSet) {
-		let bricksOverBoard = 0;
+		const { cells, slots } = this;
 
-		this.cells.forEach((c) => {
+		this.targetSlots = [];
+
+		cells.forEach((c, idx) => {
+			c.highlight(null);
 			brickSet.bricks.forEach((b) => {
-				c.highlightColor = null;
-				if (b.IsOverOther(c)) {
-					bricksOverBoard++;
+				if (slots[idx].brick === null && b.isOverOther(c)) {
+					this.targetSlots.push(idx);
 				}
 			});
 		});
 
-		if (bricksOverBoard === brickSet.bricks.length) {
-			this.cells.forEach((c) => {
-				brickSet.bricks.forEach((b) => {
-					b.HighlightOtherIfOver(c);
-				});
+		if (this.targetSlots.length === brickSet.bricks.length) {
+			this.targetSlots.forEach((s) => {
+				cells[s].highlight(brickSet.color);
 			});
+		} else {
+			this.targetSlots = [];
 		}
+	}
+}
+
+class BoardSlot {
+	constructor(public point: Point, public brick: Brick | null) {}
+
+	public setBrick(brick: Brick): void {
+		this.brick = brick;
+		this.brick.x = this.point.x;
+		this.brick.y = this.point.y;
+	}
+
+	public clearBrick(): void {
+		this.brick = null;
 	}
 }

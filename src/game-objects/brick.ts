@@ -16,12 +16,20 @@ export class Brick {
 		// destructure this into variables
 		const { ctx, x, y, size, color, highlightColor } = this;
 
+		ctx.save();
 		ctx.fillStyle = highlightColor ?? color;
+		ctx.globalAlpha = highlightColor ? 0.5 : 1;
 		ctx.fillRect(x, y, size, size);
 
-		let borderSize = size * 0.15;
+		this.drawBevels();
 
-		ctx.strokeStyle = "white";
+		ctx.restore();
+	}
+
+	private drawBevels() {
+		const { ctx, x, y, size } = this;
+
+		let borderSize = size * 0.15;
 
 		// draw top bevel
 		ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
@@ -63,6 +71,8 @@ export class Brick {
 
 		ctx.closePath();
 		ctx.fill();
+
+		ctx.restore();
 	}
 
 	public isPointOver(point: Point): boolean {
@@ -75,16 +85,20 @@ export class Brick {
 
 	public center(): Point {
 		const { x, y, size } = this;
-		return new Point(x + size, y + size);
+		return new Point(x + size / 2, y + size / 2);
 	}
 
-	public IsOverOther(other: Brick): boolean {
+	public isOverOther(other: Brick): boolean {
 		return other.isPointOver(this.center());
 	}
 
-	public HighlightOtherIfOver(other: Brick) {
-		if (this.IsOverOther(other)) {
+	public highlightOtherIfOver(other: Brick) {
+		if (this.isOverOther(other)) {
 			other.highlightColor = this.color;
 		}
+	}
+
+	public highlight(color: string | null) {
+		this.highlightColor = color;
 	}
 }

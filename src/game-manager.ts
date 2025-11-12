@@ -37,21 +37,21 @@ export class GameManager {
 		const { board, slotBeta } = this;
 
 		board.draw();
-		slotBeta.brickSet.draw();
+		slotBeta.brickSet?.draw();
 	}
 
 	public update(elapsedTime: number): void {
 		document.body.style.cursor = "default";
 
-		if (this.slotBeta.brickSet.isMouseOver(this.mousePosition)) {
+		if (this.slotBeta.brickSet?.isMouseOver(this.mousePosition)) {
 			console.log("mouse over slot beta", elapsedTime);
 			document.body.style.cursor = "grab";
 		}
 
-		if (this.selectedSlot) {
-			this.selectedSlot.brickSet.move(this.mousePosition);
+		if (this.selectedSlot && this.selectedSlot.brickSet) {
+			this.selectedSlot.brickSet!.move(this.mousePosition);
 			document.body.style.cursor = "none";
-			this.board.highlightBrickSet(this.selectedSlot.brickSet);
+			this.board.highlightBrickSet(this.selectedSlot.brickSet!);
 		}
 	}
 
@@ -70,18 +70,27 @@ export class GameManager {
 	}
 
 	private onClick() {
-		const { slotBeta, mousePosition } = this;
+		const { slotBeta, mousePosition, board } = this;
 
 		console.log("click", this);
 
-		if (this.selectedSlot) {
+		if (this.selectedSlot && this.selectedSlot.brickSet) {
+			if (board.targetSlots.length) {
+				board.targetSlots.forEach((s, i) => {
+					board.slots[s].setBrick(this.selectedSlot!.brickSet!.bricks[i]);
+				});
+				this.selectedSlot.brickSet = null;
+
+				// temp
+				this.selectedSlot.generateSet();
+			}
 			this.selectedSlot.resetPosition();
 			this.selectedSlot = null;
 			return;
 		}
 
-		if (slotBeta.brickSet.isMouseOver(mousePosition)) {
-			this.slotBeta.brickSet.isSelected = true;
+		if (slotBeta.brickSet?.isMouseOver(mousePosition)) {
+			this.slotBeta.brickSet!.isSelected = true;
 			document.body.style.cursor = "none";
 			this.selectedSlot = this.slotBeta;
 		}
