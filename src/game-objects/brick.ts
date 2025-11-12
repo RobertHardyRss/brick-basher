@@ -1,4 +1,5 @@
 import { BRICK_SIZE } from "../constants";
+import { Point } from "./point";
 
 export class Brick {
 	size: number = BRICK_SIZE;
@@ -7,7 +8,7 @@ export class Brick {
 		private readonly ctx: CanvasRenderingContext2D,
 		public x: number,
 		public y: number,
-        public readonly color: string = "red"
+		public readonly color: string = "red"
 	) {}
 
 	public draw(): void {
@@ -61,5 +62,14 @@ export class Brick {
 
 		ctx.closePath();
 		ctx.fill();
+	}
+
+	public isPointOver(point: Point): boolean {
+		const { ctx, x, y, size } = this;
+		const path = new Path2D();
+		path.rect(x, y, size, size);
+
+		const isInPath = ctx.isPointInPath(path, point.x, point.y);
+		return isInPath;
 	}
 }

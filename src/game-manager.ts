@@ -15,6 +15,7 @@ export class GameManager {
 	private slotCharlie!: PatternSlot;
 
 	private mousePosition: Point = new Point(0, 0);
+	private selectedSlot: PatternSlot | null = null;
 
 	constructor(
 		private readonly ctx: CanvasRenderingContext2D,
@@ -66,5 +67,10 @@ export class GameManager {
 
 	private onClick() {
 		console.log("Mouse Clicked!");
+
+		// we need to track the selected slot
+		// we need pick up brick set if we don't have one
+		// we need to drop a brickset if click on an empty space
+
 	}
 }

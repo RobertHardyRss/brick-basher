@@ -54,4 +54,9 @@ export class BrickSet {
 
 		this.color = colors[rand];
 	}
+
+	public isPointOver(point: Point): boolean {
+		const isPointOver = this.bricks.some((b) => b.isPointOver(point));
+		return isPointOver;
+	}
 }
