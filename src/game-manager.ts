@@ -72,5 +72,9 @@ export class GameManager {
 		// we need pick up brick set if we don't have one
 		// we need to drop a brickset if click on an empty space
 
+		if (this.slotAlpha.isPointOver(this.mousePosition)) {
+			console.log("click alpha!", this.mousePosition);
+			this.selectedSlot = this.slotAlpha;
+		}
 	}
 }

@@ -20,4 +20,8 @@ export class PatternSlot {
 
 		this.brickSet = new BrickSet(ctx, point.x, point.y, pattern);
 	}
+
+	public isPointOver(point: Point): boolean {
+		return this.brickSet.isPointOver(point);
+	}
 }
