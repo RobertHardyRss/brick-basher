@@ -27,7 +27,10 @@ export class GameManager {
 	}
 
 	public draw(): void {
-		const { board, slotAlpha, slotBeta, slotCharlie } = this;
+		const { board, slotAlpha, slotBeta, slotCharlie, ctx, canvas } = this;
+
+		// clear the canvas
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 		board.draw();
 		slotAlpha.brickSet.draw();
@@ -35,20 +38,22 @@ export class GameManager {
 		slotCharlie.brickSet.draw();
 	}
 
-	public update(timestamp: number): void {}
+	public update(timestamp: number): void {
+		if (this.selectedSlot) {
+			this.selectedSlot.move(this.mousePosition);
+		}
+	}
 
 	private initSlots() {
-		let pointBeta = new Point(
-			this.canvas.width / 1.8 - BRICK_SIZE * 2,
-			this.boardPadding.top + BRICK_SIZE * 8 + this.boardPadding.bottom
-		);
+		const y = this.boardPadding.top + BRICK_SIZE * 8 + this.boardPadding.bottom;
+
+		let pointBeta = new Point(this.canvas.width / 1.8 - BRICK_SIZE * 2, y);
+		let pointAlpha = new Point(pointBeta.x - BRICK_SIZE * 5, y);
+		let pointCharlie = new Point(pointBeta.x + BRICK_SIZE * 5, y);
+
 		this.slotBeta = new PatternSlot(this.ctx, pointBeta);
-
-		pointBeta.x -= BRICK_SIZE * 5;
-		this.slotAlpha = new PatternSlot(this.ctx, pointBeta);
-
-		pointBeta.x += BRICK_SIZE * 10;
-		this.slotCharlie = new PatternSlot(this.ctx, pointBeta);
+		this.slotAlpha = new PatternSlot(this.ctx, pointAlpha);
+		this.slotCharlie = new PatternSlot(this.ctx, pointCharlie);
 	}
 
 	private wireUpEvents() {
@@ -70,7 +75,12 @@ export class GameManager {
 
 		// we need to track the selected slot
 		// we need pick up brick set if we don't have one
+
 		// we need to drop a brickset if click on an empty space
+		if (this.selectedSlot) {
+			this.selectedSlot.resetPosition();
+			this.selectedSlot = null;
+		}
 
 		if (this.slotAlpha.isPointOver(this.mousePosition)) {
 			console.log("click alpha!", this.mousePosition);

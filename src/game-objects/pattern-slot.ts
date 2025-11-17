@@ -24,4 +24,12 @@ export class PatternSlot {
 	public isPointOver(point: Point): boolean {
 		return this.brickSet.isPointOver(point);
 	}
+
+	public move(point: Point): void {
+		this.brickSet.move(point);
+	}
+
+	public resetPosition(): void {
+		this.brickSet.move(this.point);
+	}
 }
