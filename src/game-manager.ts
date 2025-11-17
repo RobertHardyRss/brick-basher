@@ -38,33 +38,45 @@ export class GameManager {
 		slotBeta.brickSet?.draw();
 	}
 
-	private initSlots() {
-		let pointBeta = new Point(
-			this.canvas.width / 1.8 - BRICK_SIZE * 2,
-			this.boardPadding.top + BRICK_SIZE * 8 + this.boardPadding.bottom
-		);
-		this.slotBeta = new PatternSlot(this.ctx, pointBeta);
-
-		pointBeta.x -= BRICK_SIZE * 5;
-		this.slotAlpha = new PatternSlot(this.ctx, pointBeta);
-
-		pointBeta.x += BRICK_SIZE * 10;
-		this.slotCharlie = new PatternSlot(this.ctx, pointBeta);
-	}
-
 	public update(elapsedTime: number): void {
+		const { selectedSlot, mousePosition } = this;
+
 		document.body.style.cursor = "default";
 
-		if (this.slotBeta.brickSet?.isPointOver(this.mousePosition)) {
-			console.log("mouse over slot beta", elapsedTime);
+		if (selectedSlot) {
+			document.body.style.cursor = "none";
+			selectedSlot.move(this.mousePosition);
+			this.board.highlightBrickSet(selectedSlot.brickSet!);
+		}
+
+		const slots = [this.slotAlpha, this.slotBeta, this.slotCharlie];
+
+		// set mouse cursor to grab if we don't have a selected slot
+		// and the mouse is over an available slot
+		if (
+			selectedSlot === null &&
+			slots.some((s) => s.isPointOver(mousePosition))
+		) {
 			document.body.style.cursor = "grab";
 		}
 
-		if (this.selectedSlot && this.selectedSlot.brickSet) {
-			this.selectedSlot.brickSet!.move(this.mousePosition);
-			document.body.style.cursor = "none";
-			this.board.highlightBrickSet(this.selectedSlot.brickSet!);
+		// if all slots have been placed, generate new brick sets
+		// for each one
+		if (selectedSlot === null && !slots.some((s) => s.brickSet)) {
+			slots.forEach((s) => s.generateSet());
 		}
+	}
+
+	private initSlots() {
+		let y = this.boardPadding.top + BRICK_SIZE * 8 + this.boardPadding.bottom;
+
+		let pointBeta = new Point(this.canvas.width / 1.8 - BRICK_SIZE * 2, y);
+		let pointAlpha = new Point(pointBeta.x - BRICK_SIZE * 5, y);
+		let pointCharlie = new Point(pointBeta.x + BRICK_SIZE * 5, y);
+
+		this.slotAlpha = new PatternSlot(this.ctx, pointAlpha, "alpha");
+		this.slotBeta = new PatternSlot(this.ctx, pointBeta, "beta");
+		this.slotCharlie = new PatternSlot(this.ctx, pointCharlie, "charlie");
 	}
 
 	private wireUpEvents() {
@@ -82,28 +94,33 @@ export class GameManager {
 	}
 
 	private onClick() {
-		const { slotBeta, mousePosition, board } = this;
+		const { slotAlpha, slotBeta, slotCharlie, mousePosition, board } = this;
 
-		console.log("click", this);
-
+		// If we have a brick set selected and the board has
+		// target slots available for the set, that means we
+		// can place the bricks on the board and clear the
+		// brick set for the selected slot.
 		if (this.selectedSlot && this.selectedSlot.brickSet) {
 			if (board.targetSlots.length) {
 				board.targetSlots.forEach((s, i) => {
 					board.slots[s].setBrick(this.selectedSlot!.brickSet!.bricks[i]);
 				});
 				this.selectedSlot.brickSet = null;
-
-				// temp
-				this.selectedSlot.generateSet();
 			}
+
+			// Reset the brick set position, and clear the selected slot.
 			this.selectedSlot.resetPosition();
 			this.selectedSlot = null;
 			return;
 		}
 
-		if (slotBeta.brickSet?.isPointOver(mousePosition)) {
-			document.body.style.cursor = "none";
-			this.selectedSlot = this.slotBeta;
-		}
+		// check each slot to see of the mouse is over a brick set
+		// if it is, make that slot the selected one
+		[slotAlpha, slotBeta, slotCharlie].forEach((s) => {
+			if (s.isPointOver(mousePosition)) {
+				document.body.style.cursor = "none";
+				this.selectedSlot = s;
+			}
+		});
 	}
 }

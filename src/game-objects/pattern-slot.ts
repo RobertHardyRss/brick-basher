@@ -7,7 +7,8 @@ export class PatternSlot {
 
 	constructor(
 		private readonly ctx: CanvasRenderingContext2D,
-		public point: Point
+		private readonly point: Point,
+		private readonly name: string
 	) {
 		this.generateSet();
 	}
@@ -21,11 +22,16 @@ export class PatternSlot {
 		this.brickSet = new BrickSet(ctx, point.x, point.y, pattern);
 	}
 
-	public resetPosition() {
-		this.brickSet?.move(this.point);
-	}
-	
 	public isPointOver(point: Point): boolean {
 		return this.brickSet?.isPointOver(point) ?? false;
+	}
+
+	public resetPosition() {
+		this.brickSet?.move(this.point);
+		console.log(this);
+	}
+
+	public move(point: Point) {
+		this.brickSet?.move(point);
 	}
 }

@@ -11,6 +11,8 @@ export class GameBoard {
 	public cells: Array<Brick> = [];
 	public slots: Array<BoardSlot> = [];
 	public targetSlots: Array<number> = [];
+	public targetColSlots: Array<number> = [];
+	public targetRowSlots: Array<number> = [];
 
 	constructor(
 		private readonly ctx: CanvasRenderingContext2D,
@@ -50,9 +52,13 @@ export class GameBoard {
 		const { cells, slots } = this;
 
 		this.targetSlots = [];
+		this.targetColSlots = [];
+		this.targetRowSlots = [];
 
 		cells.forEach((c, idx) => {
 			c.highlight(null);
+			this.slots[idx].brick?.highlight(null);
+
 			brickSet.bricks.forEach((b) => {
 				if (slots[idx].brick === null && b.isOverOther(c)) {
 					this.targetSlots.push(idx);
@@ -63,6 +69,47 @@ export class GameBoard {
 		if (this.targetSlots.length === brickSet.bricks.length) {
 			this.targetSlots.forEach((s) => {
 				cells[s].highlight(brickSet.color);
+			});
+
+			// since we have target slots, see if we have any rows
+			// or columns that are complete
+
+			// start with rows
+			for (let row = 0; row < this.rows; row++) {
+				let slotsFilled = [];
+				for (let col = 0; col < this.cols; col++) {
+					// set an index for the slot we want to check
+					const idx = col + col * row;
+					if (slots[idx].brick !== null || this.targetSlots.includes(idx)) {
+						slotsFilled.push(idx);
+					}
+				}
+
+				if (slotsFilled.length === this.rows) {
+					this.targetRowSlots = this.targetRowSlots.concat(slotsFilled);
+				}
+			}
+
+			this.targetRowSlots.forEach((s) => {
+				slots[s].brick?.highlight(brickSet.color);
+			});
+
+			for (let col = 0; col < this.cols; col++) {
+				let slotsFilled = [];
+				for (let row = 0; row < this.rows; row++) {
+					// set an index for the slot we want to check
+					const idx = row * this.cols + col;
+					if (slots[idx].brick !== null || this.targetSlots.includes(idx)) {
+						slotsFilled.push(idx);
+					}
+				}
+
+				if (slotsFilled.length === this.cols) {
+					this.targetColSlots = this.targetColSlots.concat(slotsFilled);
+				}
+			}
+			this.targetColSlots.forEach((s) => {
+				slots[s].brick?.highlight(brickSet.color);
 			});
 		} else {
 			this.targetSlots = [];
