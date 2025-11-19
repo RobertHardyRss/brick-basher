@@ -36,11 +36,26 @@ export class GameManager {
 		slotAlpha.brickSet.draw();
 		slotBeta.brickSet.draw();
 		slotCharlie.brickSet.draw();
+
+		this.selectedSlot?.brickSet.draw();
 	}
 
 	public update(timestamp: number): void {
+		const slots = [this.slotAlpha, this.slotBeta, this.slotCharlie];
+
+		// set mouse cursor to default
+		document.body.style.cursor = "default";
+
 		if (this.selectedSlot) {
+			document.body.style.cursor = "none";
 			this.selectedSlot.move(this.mousePosition);
+		}
+
+		if (
+			!this.selectedSlot &&
+			slots.some((s) => s.isPointOver(this.mousePosition))
+		) {
+			document.body.style.cursor = "grab";
 		}
 	}
 
@@ -82,9 +97,12 @@ export class GameManager {
 			this.selectedSlot = null;
 		}
 
-		if (this.slotAlpha.isPointOver(this.mousePosition)) {
-			console.log("click alpha!", this.mousePosition);
-			this.selectedSlot = this.slotAlpha;
-		}
+		const slots = [this.slotAlpha, this.slotBeta, this.slotCharlie];
+
+		slots.forEach((s) => {
+			if (s.isPointOver(this.mousePosition)) {
+				this.selectedSlot = s;
+			}
+		});
 	}
 }
