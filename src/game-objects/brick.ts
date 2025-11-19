@@ -3,6 +3,7 @@ import { Point } from "./point";
 
 export class Brick {
 	size: number = BRICK_SIZE;
+	highlightColor: string | null = null;
 
 	constructor(
 		private readonly ctx: CanvasRenderingContext2D,
@@ -71,5 +72,13 @@ export class Brick {
 
 		const isInPath = ctx.isPointInPath(path, point.x, point.y);
 		return isInPath;
+	}
+
+	public center(): Point {
+		return new Point(this.x + this.size / 2, this.y + this.size / 2);
+	}
+
+	public isOtherOver(other: Brick): boolean {
+		return this.isPointOver(other.center());
 	}
 }
