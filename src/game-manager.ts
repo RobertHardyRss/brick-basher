@@ -49,6 +49,7 @@ export class GameManager {
 		if (this.selectedSlot) {
 			document.body.style.cursor = "none";
 			this.selectedSlot.move(this.mousePosition);
+			this.board.highlightBrickSet(this.selectedSlot.brickSet);
 		}
 
 		if (

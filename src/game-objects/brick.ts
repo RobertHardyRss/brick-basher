@@ -16,12 +16,24 @@ export class Brick {
 		// destructure this into variables
 		const { ctx, x, y, size, color } = this;
 
-		ctx.fillStyle = color;
+		// saves the stats of the current context
+		ctx.save();
+
+		ctx.fillStyle = this.highlightColor ?? color;
+		ctx.globalAlpha = this.highlightColor ? 0.5 : 1;
+
 		ctx.fillRect(x, y, size, size);
 
-		let borderSize = size * 0.15;
+		this.drawBevels();
 
-		ctx.strokeStyle = "white";
+		// restore the context
+		ctx.restore();
+	}
+
+	private drawBevels(): void {
+		const { ctx, x, y, size } = this;
+
+		let borderSize = size * 0.15;
 
 		// draw top bevel
 		ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
@@ -75,7 +87,8 @@ export class Brick {
 	}
 
 	public center(): Point {
-		return new Point(this.x + this.size / 2, this.y + this.size / 2);
+		const { x, y, size } = this;
+		return new Point(x + size / 2, y + size / 2);
 	}
 
 	public isOtherOver(other: Brick): boolean {
