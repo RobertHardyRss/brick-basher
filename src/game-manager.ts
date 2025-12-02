@@ -2,9 +2,12 @@ import { BRICK_SIZE } from "./constants";
 import { GameBoard } from "./game-objects/game-board";
 import { PatternSlot } from "./game-objects/pattern-slot";
 import { Point } from "./game-objects/point";
+import { ScoreBoard } from "./game-objects/score-board";
 
 export class GameManager {
 	private board: GameBoard;
+	private scoreBoard: ScoreBoard;
+
 	private boardPadding = {
 		top: 100,
 		bottom: 50,
@@ -25,16 +28,25 @@ export class GameManager {
 	) {
 		this.wireUpEvents();
 
+		this.scoreBoard = new ScoreBoard(
+			ctx,
+			0,
+			0,
+			canvas.width,
+			this.boardPadding.top
+		);
 		this.board = new GameBoard(ctx, canvas.width / 2, this.boardPadding.top);
 		this.initSlots();
 	}
 
 	public draw(): void {
-		const { board, slotAlpha, slotBeta, slotCharlie, ctx, canvas } = this;
+		const { scoreBoard, board, slotAlpha, slotBeta, slotCharlie, ctx, canvas } =
+			this;
 
 		// clear the canvas
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+		scoreBoard.draw();
 		board.draw();
 		slotAlpha.brickSet?.draw();
 		slotBeta.brickSet?.draw();
@@ -82,7 +94,7 @@ export class GameManager {
 
 	private initSlots() {
 		const y = this.boardPadding.top + BRICK_SIZE * 8 + this.boardPadding.bottom;
-		
+
 		let pointBeta = new Point(this.canvas.width / 1.8 - BRICK_SIZE * 2, y);
 		let pointAlpha = new Point(pointBeta.x - BRICK_SIZE * 5, y);
 		let pointCharlie = new Point(pointBeta.x + BRICK_SIZE * 5, y);
