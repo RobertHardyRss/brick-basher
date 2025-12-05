@@ -1,4 +1,7 @@
-import type { ScoreEvent } from "../game-events";
+import { ScoreEvent } from "../game-events";
+import { getCookie, setCookie } from "typescript-cookie";
+
+const MAX_SCORE_COOKIE: string = "max-score";
 
 export class ScoreBoard {
 	private currentScore: number = 0;
@@ -11,6 +14,9 @@ export class ScoreBoard {
 		private w: number,
 		private h: number
 	) {
+		this.maxScore = Math.floor(
+			(getCookie(MAX_SCORE_COOKIE) as number | undefined) ?? 0
+		);
 		this.wireUpEvents();
 	}
 
@@ -41,10 +47,19 @@ export class ScoreBoard {
 	private wireUpEvents(): void {
 		this.onScore = this.onScore.bind(this);
 		window.addEventListener("bb-score", this.onScore);
+
+		this.onGameOver = this.onGameOver.bind(this);
+		window.addEventListener("bb-game-over", this.onGameOver);
 	}
 
 	private onScore(e: ScoreEvent) {
 		console.log("Score board listener", e.score);
 		this.currentScore += e.score.total();
+	}
+
+	private onGameOver(): void {
+		if (this.currentScore > this.maxScore) {
+			setCookie(MAX_SCORE_COOKIE, this.currentScore);
+		}
 	}
 }
