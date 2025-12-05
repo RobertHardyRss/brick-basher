@@ -1,6 +1,8 @@
+import type { ScoreEvent } from "../game-events";
+
 export class ScoreBoard {
-	private currentScore: number = 123456;
-	private maxScore: number = 999999;
+	private currentScore: number = 0;
+	private maxScore: number = 0;
 
 	constructor(
 		private readonly ctx: CanvasRenderingContext2D,
@@ -8,7 +10,9 @@ export class ScoreBoard {
 		private y: number,
 		private w: number,
 		private h: number
-	) {}
+	) {
+		this.wireUpEvents();
+	}
 
 	public draw(): void {
 		const { ctx, x, y, w, h, currentScore, maxScore } = this;
@@ -32,5 +36,15 @@ export class ScoreBoard {
 		ctx.fillText(maxScore.toLocaleString(), x + 20, y + 25);
 
 		ctx.restore();
+	}
+
+	private wireUpEvents(): void {
+		this.onScore = this.onScore.bind(this);
+		window.addEventListener("bb-score", this.onScore);
+	}
+
+	private onScore(e: ScoreEvent) {
+		console.log("Score board listener", e.score);
+		this.currentScore += e.score.total();
 	}
 }
