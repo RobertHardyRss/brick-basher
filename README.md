@@ -44,3 +44,14 @@ score for clearing the entire board with one placement is 12,800
 points (8 x 10 x 160). Points accumulate until the game is over. The high score
 is stored locally in a cookie and displayed on screen so the player can see how
 close they are to beating their last best score.
+
+## Potential Features
+
+- Restart when game over
+- Score when brick sets are placed (1 point per brick)
+- Emoji's in bricks when clearing
+- Particle effects when rows/columns cleared
+- Sound effects
+- Background music
+- Reroll selection after you placed 3 sets
+- Power ups
