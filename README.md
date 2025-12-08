@@ -55,3 +55,5 @@ close they are to beating their last best score.
 - Background music
 - Reroll selection after you placed 3 sets
 - Power ups
+- Home/Game Over Screen
+- Publish Game so people can get to it
