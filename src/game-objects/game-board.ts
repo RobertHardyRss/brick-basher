@@ -144,8 +144,6 @@ export class GameBoard {
 
 		const event = new ScoreEvent(score);
 		window.dispatchEvent(event);
-		
-		console.log("score: ", score);
 	}
 
 	/**

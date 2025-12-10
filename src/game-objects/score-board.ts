@@ -53,7 +53,6 @@ export class ScoreBoard {
 	}
 
 	private onScore(e: ScoreEvent) {
-		console.log("Score board listener", e.score);
 		this.currentScore += e.score.total();
 	}
 
@@ -62,4 +61,15 @@ export class ScoreBoard {
 			setCookie(MAX_SCORE_COOKIE, this.currentScore);
 		}
 	}
+
+	public getPlayerScores(): PlayerScores {
+		return new PlayerScores(this.currentScore, this.maxScore);
+	}
+}
+
+export class PlayerScores {
+	constructor(
+		public readonly score: number,
+		public readonly maxScore: number
+	) {}
 }

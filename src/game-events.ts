@@ -4,6 +4,7 @@ declare global {
 	interface GlobalEventHandlersEventMap {
 		"bb-score": ScoreEvent;
 		"bb-game-over": GameOverEvent;
+		"bb-game-reset": GameResetEvent;
 	}
 }
 
@@ -28,5 +29,11 @@ export class BrickScore {
 export class GameOverEvent extends Event {
 	constructor() {
 		super("bb-game-over");
+	}
+}
+
+export class GameResetEvent extends Event {
+	constructor() {
+		super("bb-game-reset");
 	}
 }

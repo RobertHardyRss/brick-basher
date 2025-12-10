@@ -27,17 +27,20 @@ const pointMap: Array<Point> = [
 export class BrickSet {
 	public bricks: Array<Brick> = [];
 	public color: string = "red";
+	private readonly pointMap: Array<Point>;
 
 	constructor(
 		protected readonly ctx: CanvasRenderingContext2D,
 		public x: number,
 		public y: number,
-		public pos: Array<number> = []
+		public pos: Array<number> = [],
+		optionalPointMap: Array<Point> | null = null
 	) {
 		this.setColor();
+		this.pointMap = optionalPointMap ?? pointMap;
 
 		pos.forEach((p) => {
-			let point = pointMap[p - 1];
+			let point = this.pointMap[p - 1];
 			let brick = new Brick(ctx, x + point.x, y + point.y, this.color);
 			this.bricks.push(brick);
 		});
@@ -67,7 +70,7 @@ export class BrickSet {
 		const { x, y, pos, bricks } = this;
 
 		pos.forEach((p, idx) => {
-			let point = pointMap[p - 1];
+			let point = this.pointMap[p - 1];
 			bricks[idx].x = x + point.x;
 			bricks[idx].y = y + point.y;
 		});

@@ -4,10 +4,12 @@ import { GameBoard } from "./game-objects/game-board";
 import { PatternSlot } from "./game-objects/pattern-slot";
 import { Point } from "./game-objects/point";
 import { ScoreBoard } from "./game-objects/score-board";
+import { GameOverScene } from "./scenes/game-over-scene";
 
 export class GameManager {
-	private board: GameBoard;
-	private scoreBoard: ScoreBoard;
+	private board!: GameBoard;
+	private scoreBoard!: ScoreBoard;
+	private gameOverScene: GameOverScene;
 
 	private boardPadding = {
 		top: 100,
@@ -28,15 +30,24 @@ export class GameManager {
 		private readonly canvas: HTMLCanvasElement
 	) {
 		this.wireUpEvents();
+		this.initGame();
 
+		this.gameOverScene = new GameOverScene(ctx, canvas);
+	}
+
+	private initGame(): void {
 		this.scoreBoard = new ScoreBoard(
-			ctx,
+			this.ctx,
 			0,
 			0,
-			canvas.width,
+			this.canvas.width,
 			this.boardPadding.top
 		);
-		this.board = new GameBoard(ctx, canvas.width / 2, this.boardPadding.top);
+		this.board = new GameBoard(
+			this.ctx,
+			this.canvas.width / 2,
+			this.boardPadding.top
+		);
 		this.initSlots();
 	}
 
@@ -46,6 +57,11 @@ export class GameManager {
 
 		// clear the canvas
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		if (this.isGameOver) {
+			this.gameOverScene.draw();
+			return;
+		}
 
 		scoreBoard.draw();
 		board.draw();
@@ -111,6 +127,9 @@ export class GameManager {
 
 		this.onClick = this.onClick.bind(this);
 		document.addEventListener("click", this.onClick);
+
+		this.onGameReset = this.onGameReset.bind(this);
+		window.addEventListener("bb-game-reset", this.onGameReset);
 	}
 
 	private onMouseMove(event: MouseEvent): void {
@@ -153,6 +172,11 @@ export class GameManager {
 		});
 	}
 
+	private onGameReset(): void {
+		this.isGameOver = false;
+		this.initGame();
+	}
+
 	private checkForGameOver(): void {
 		// check our remaining slots with brick sets to see if we can place at least one
 		const slotsWithSets = [
@@ -168,9 +192,8 @@ export class GameManager {
 			this.isGameOver = !canPlaceRemainingSlots;
 		}
 
-		console.log("Game over?", this.isGameOver);
-
 		if (this.isGameOver) {
+			this.gameOverScene.updateScores(this.scoreBoard.getPlayerScores());
 			let event = new GameOverEvent();
 			window.dispatchEvent(event);
 		}
