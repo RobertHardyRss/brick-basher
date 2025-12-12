@@ -6,6 +6,9 @@ import { Point } from "./game-objects/point";
 import { ScoreBoard } from "./game-objects/score-board";
 import { GameOverScene } from "./scenes/game-over-scene";
 
+const audioPlaceBlock =
+	document.querySelector<HTMLAudioElement>("#audio-place-block");
+
 export class GameManager {
 	private board!: GameBoard;
 	private scoreBoard!: ScoreBoard;
@@ -151,6 +154,7 @@ export class GameManager {
 				});
 				board.clearFilledSlots();
 				this.selectedSlot.brickSet = null;
+				audioPlaceBlock?.play();
 			}
 
 			// Reset the brick set position, and clear the selected slot.
